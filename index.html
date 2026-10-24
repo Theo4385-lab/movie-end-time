@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>คำนวณเวลาหนังจบ</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "Noto Sans Thai", sans-serif; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: linear-gradient(135deg, #111827, #312e81); color: #f8fafc; }
+    main { box-sizing: border-box; width: min(92vw, 460px); padding: 32px; border-radius: 24px; background: rgba(15,23,42,.84); box-shadow: 0 24px 60px #0007; }
+    h1 { margin: 0 0 8px; font-size: 1.8rem; } p { color: #cbd5e1; margin: 0 0 24px; }
+    label { display: block; margin: 16px 0 7px; font-weight: 650; }
+    input { box-sizing: border-box; width: 100%; border: 1px solid #475569; border-radius: 10px; padding: 12px; font: inherit; color: #0f172a; background: #fff; }
+    button { width: 100%; margin-top: 24px; padding: 13px; border: 0; border-radius: 10px; background: #a78bfa; color: #1e1b4b; font: inherit; font-weight: 800; cursor: pointer; }
+    #result { min-height: 30px; margin: 23px 0 0; text-align: center; font-size: 1.2rem; font-weight: 700; color: #ddd6fe; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🎬 คำนวณเวลาหนังจบ</h1>
+    <p>กรอกเวลาเริ่มและความยาวหนัง เพื่อดูว่าหนังจะจบกี่โมง</p>
+    <label for="start">เวลาเริ่ม</label>
+    <input id="start" type="time" required />
+    <label for="duration">ความยาวหนัง (นาที)</label>
+    <input id="duration" type="number" min="1" inputmode="numeric" placeholder="เช่น 125" required />
+    <button id="calculate">คำนวณเวลาจบ</button>
+    <div id="result" aria-live="polite"></div>
+  </main>
+  <script>
+    const start = document.querySelector('#start');
+    const duration = document.querySelector('#duration');
+    const result = document.querySelector('#result');
+    document.querySelector('#calculate').addEventListener('click', () => {
+      if (!start.value || !duration.value || Number(duration.value) < 1) {
+        result.textContent = 'กรุณากรอกเวลาเริ่มและความยาวหนังให้ครบ';
+        return;
+      }
+      const [hours, minutes] = start.value.split(':').map(Number);
+      const end = new Date(2000, 0, 1, hours, minutes + Number(duration.value));
+      result.textContent = `หนังจะจบเวลา ${end.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false })} น.`;
+    });
+  </script>
+</body>
+</html>

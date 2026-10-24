@@ -581,3 +581,51 @@
     showErrors({});
     hideResult();
     startInput.focus();
+  });
+
+  // ล้างข้อความผิดพลาดของช่องนั้นเมื่อผู้ใช้แก้ไข
+  Object.keys(fieldMap).forEach(function (key) {
+    fieldMap[key].input.addEventListener("input", function () {
+      delete lastErrors[key];
+      fieldMap[key].message.textContent = "";
+      fieldMap[key].box.classList.remove("invalid");
+      fieldMap[key].input.setAttribute("aria-invalid", "false");
+    });
+  });
+
+  /* ---------- สลับภาษา ---------- */
+  const langButtons = document.querySelectorAll(".lang button");
+
+  function applyLanguage(lang) {
+    if (!I18N[lang]) lang = "th";
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function (el) {
+      el.placeholder = t(el.dataset.i18nPh);
+    });
+    document.title = t("docTitle");
+    document.getElementById("meta-desc").setAttribute("content", t("docDesc"));
+    langButtons.forEach(function (btn) {
+      btn.setAttribute("aria-pressed", String(btn.dataset.lang === lang));
+    });
+    try { localStorage.setItem("movie-lang", lang); } catch (e) { /* ไม่เป็นไร */ }
+    showErrors(lastErrors);
+    if (lastCalc) showResult(calculateMovieEnd(lastCalc[0], lastCalc[1], lastCalc[2]));
+  }
+
+  langButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () { applyLanguage(btn.dataset.lang); });
+  });
+
+  (function initLanguage() {
+    let saved = null;
+    try { saved = localStorage.getItem("movie-lang"); } catch (e) { /* ไม่เป็นไร */ }
+    const browser = (navigator.language || "").slice(0, 2).toLowerCase();
+    applyLanguage(I18N[saved] ? saved : (I18N[browser] ? browser : "th"));
+  })();
+</script>
+</body>
+</html>
